@@ -1,0 +1,138 @@
+Today:   Templates and the STL
+-------------------------
+
+A lot of what we have done so far has been to avoid copying and pasting.
+Suppose we want to change our arrays from storing ints to floats?  
+What do we do?
+
+One solution would be to copy and paste our class and change the data type
+to floats.  This violates a lot of the good software engineering principles we
+are trying to stick to.  The better solution?  Develop a templated class.
+
+Templates allow you to write a generic class (i.e., an array class) and specify
+what the base type is when you declare the variable.  An example you may
+already be using is the vector class, which you could do as follows:
+
+vector<int> intVec;
+vector<float> floatVec;
+
+Which creates an enhanced array-like data structure of ints and floats, respectively.
+
+
+Haven't we seen this before (aka the Standard Template Library?!)
+---------------------------------
+
+The STL, and specifically the sequence containers you have used in
+Fundamentals use this same templating technology with the following features:
+
+containers
+itertators
+algorithms
+
+Containers hold the data we are interested in, and have slightly different flavors
+
+Iterators are basically pointers to data held in containers.  They are powerful in that
+they facilitate looping and advanced, generic algorithms on containers.  This
+can (and often) reduces a lot of lines of code into a statement or two using these
+pointer-like properties (see Fundamentals examples)
+
+The algorithms available via the STL are common ones you may think of like
+random_shuffle to shuffle a collection of items or sort to sort them.  To enable 
+these algorithms to work on all STL containers, they use iterators to process 
+data instead of the class internals.  There are about 70 algorithms available.
+
+Iterators have many features in common with pointers and were covered
+in depth in Fundamentals
+
+
+Making your own templated classes
+-------------------------
+
+Today we'll continue our discussion on generic programming by talking about how to achieve
+the cool functionality of STL containers by talking about user-defined templates classes.
+We'll start with examples you will cover in data structures: stacks and queues.
+
+In general, there are function templates and class templates available to the C++ programmer.
+We covered templates functions.  Now we'll hit classes.
+
+This functionality allows generic programming:  these allow a user to specify an entire range 
+of overloaded functions that can vary based on the type desired determined at compile time.
+
+We already covered a sort function that automatically can determine what type is used (int, 
+float, etc) and sort them using overloaded < and ==  operators.  
+
+Each set of functions is turned into a "function-template specialization" or a 
+"class-template specialization" at compile time.  This means that you will
+need hard drive space/memory for all of these functions, but this is usually
+not a problem as you would need to write specific functions anyway to
+achieve the same task.
+
+In some ways, templates are like C macros.  The main difference, though,
+is templates have strict type checking where macros do not.  Type checking
+is always good, so C++ templates are much more powerful.  For those of you who
+know c# and maybe some Java, C++ isn't as strongly rigid, which is a good and
+bad thing. The good is you can use implicit type conversion.  The bad
+is you may not know you need this functionality :)
+
+All function templates begin with the keyword template followed by < and >
+
+Inside < > are multiple user-defined types that can change as needed
+
+typename is used for build-in types (e.g., int) like this:  template < typename T>
+
+class is used for user-defined class types like this: template < class ElemType >
+
+A complete code example is something like the following:
+
+
+template <typename T>
+void printArr (const * T const array, int count) {
+     
+     for (int i = 0; i < count; i++)
+     	 cout << "array[i] << " ";
+
+     cout << endl;
+
+}
+     
+It is possible to submit multiple types/parameters in your templates.  It is also possible
+to overload template definitions if desired.
+
+In fact, the "under the hood" parts of the compiler uses the same overloading
+resolution components to assign the right function to the right call in you code.
+Note that this can be implicit (as in the example in class) or explicit if desired.
+
+Class templates, on the other hand, are called parameterized types because they
+require one or more arguments to generate a "generic class."  So far, we are
+familar with the vector notation: vector<int> to specify a vector of type int.  We
+will do the same thing for class templates.
+
+Templating classes is, in general, pretty easy.  All we need to do is preface the
+class definition with a template definition, and all subsequent base type values
+are replaced with the template.  For example, Figure 14.2 shows a stack template
+where the initial part is:
+
+template <typename T>
+class FooBar {
+
+public:
+
+...
+
+bool push (const T &);
+
+...
+
+User-defined types (classes) can be provided as arguments. Another
+cool feature is that templates can take non-type parameters.  For example, if we
+wanted to initialize our stack to contain 100 int elements, we can specify our template as
+
+template <typename T, int elements>
+
+and instantiate our stack as:  stack <int,100>
+
+
+Specifying default types is also possible using similar notation to default
+constructor values.
+
+template <typename T = int>
