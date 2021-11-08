@@ -1,0 +1,148 @@
+
+
+Inheritance is a form of software reuse where a new class absorbs data 
+and behaviors of an existing class, and adds some new ones
+
+The existing class is called a "base class" and the new one is called 
+a "derived" class
+
+To help make sense of this, we will define a class hierarchy 
+
+Base classes that are one level above another are called direct base 
+classes; more than one level above are called indirect base classes
+
+Single inheritance is a case where a class is derived from a single base 
+class; C++ also allows for multiple inheritance, but this is complicated 
+and error prone.  We'll stick to single inheritance this semester.
+
+Three types just like access specifiers:  public, protected and private.  
+Protected is rarely used.
+
+Our goal is to look at the big picture and take advantage of 
+commonalities, instead of focusing on the special cases.  If we 
+can say there is a "has a" relationship, we should use an object in
+a class (containment, 140 Connect Four lab).  
+If there is a "is a" relationship, then we'll use inheritance.
+
+NOTE:  Derived classes can only look directly at non-private data, but 
+can use non-private member functions of the base class to modify 
+base class data members.
+
+It is also possible to reimplement a member function available 
+from the base class if needed
+
+To  specify inheritence from a Vehicle class to a Car, it is done like this:
+
+class Car : public Vehicle
+
+Keep in mind here that all the private data members from Vehicle will 
+be inherited here, but they need to be accessed by inherited non-private 
+member functions.
+
+Friend functions, however, are not inherited.  If you want a friend function
+for a derived class you must define them in the derived class.
+
+Protected
+--------
+
+Protected data members and functions can be accessed directly by friends 
+and derived classes.  This is, therefore, an intermediate level of access.
+
+In general, it is better to not use protected.  It forces you to think in a 
+more object oriented manner where the implementation does not matter.  
+If you knew the variable names, you would be tempted to use them directly 
+and ignore all of the error-checking present in the base class (at least I do).
+
+You then will rewrite the error checking (or, more likely copy and paste) 
+in these classes.  Making data private keeps this from being an issue 
+in derived classes with only a slight performance hit.
+
+Constructors/deconstructors
+-----------------------
+
+When an object of a derived class is created, the base class constructor 
+is run first, all the way up the hierarchy.  Then member initialization 
+is executed and finally the derived classes' constructor.
+
+Full details of this process are in the included example
+to these lecture notes (Student and Undergrad)
+
+
+
+Polymorphism
+------------
+
+Over the past few weeks we have gone over a few aspects of object-oriented programming including
+classes, encapsulation, operator overloading and inheritance.  Today we'll go over another: polymorphism.
+
+The interesting thing about polymorphism is it lets us process a diverse collection of derived classes
+from a single inheritance hierarchy using base class pointers.  This will let us "program in the general"
+as outlined in the text.
+
+This will also let us build extensible software as large portions of the code may remain unmodified if 
+they are build to take advantage of this. 
+
+Example #1:  we have a bunch of animals for a simulation.  The base class is Animal and some derived
+classes are fish, mosquito, tiger, and monkey.  Each will have a "move" member function, but each
+will do something different.  Polymorphism will let us do something like this:
+
+for (i = 0; i < # of animals; i++)
+    ptr->move();
+
+NOTE:  Consider if at some later point we decide to add another animal:  mouse.  As long as mouse is 
+part of the same inheritance hierarchy, the main program does not need to change much because, as an 
+example, the above for loop still will work.
+
+Example #2:  we have a screen update for the coolest game ever.  Our game has five set of creatures:
+hobbits, humans, dwarves, dragons, giants.  We can make a Creature base class and use it to 
+render all the creatures in the current scene using something like this:
+
+for (i = 0; i < # creatures in scene; i__)
+    ptr->draw();
+
+As alluded to above, base class pointers can be pointed at base class objects and derived class objects.
+
+Derived class pointers, however, can only be pointed at derived classes.
+
+As shown above, pointing a base class pointer at a derived class allows you to use a base class
+function on the derived class.  Note that this is the base class function!
+
+To overcome this, we can define virtual functions.  For the video game example, we can set
+draw as virtual as follows:
+
+virtual void draw() const;
+
+More simple, With virtual functions, the type of object being pointed to defines which functions are
+used not what type of pointer.
+
+Once a function is defined virtual, it remains virtual all the way down the hierarchy.  Even so, it is
+considered good practice to make it virtual in intermediate classes in indirect inheritance.
+
+Based on your C experience, you may want to use switch statements instead of polymorphism.
+Don't.  Any modification requires modifying the corresponding switch statement (or numerous
+switch statements).  We want to reuse code / take advantage of abstraction as much as possible,
+polymorphism is almost always a better choice.
+
+Abstract classes:
+--------------
+
+There are times when you do not want to let the client instantiate base classes.  This is possible
+by making a base class an "abstract class" by including a "pure virtual function."
+
+This is done as follows:
+
+virtual void draw() = 0;
+
+The "= 0" is a pure specifier.  In order for a class to be used, or become "complete", an implementation
+of all pure virtual functions must be provided.
+
+The difference between virtual functions and pure virtual functions is clients have the option of
+overriding virtual functions, and must override pure virtual functions.
+
+Two additional comments:
+
+1.)  Abstract classes provide a common interface for derived classes by providing the prototypes of
+     common member functions and data members usable by all derived classes
+
+2.)  An abstract class can not be instantiated, but a pointer can be created.  This allows all of the
+     polymorphism magic to still work if there are one of more pure virtual functions in the class
